@@ -2,6 +2,7 @@ import { GeistMono } from "geist/font/mono";
 import { GeistSans } from "geist/font/sans";
 import type { Metadata } from "next";
 import "./globals.css";
+import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
     title: "Create Next App",
@@ -10,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
     return (
-        <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`}>
+        <html lang="en" className={cn(GeistSans.variable, GeistMono.variable)}>
             <body>{children}</body>
         </html>
     );
