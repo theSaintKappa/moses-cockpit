@@ -4,5 +4,12 @@
         "indentStyle": "space",
         "indentWidth": 4,
         "lineWidth": 320
+    },
+    "linter": {
+        "rules": {
+            "a11y": {
+                "noSvgWithoutTitle": "off"
+            }
+        }
     }
 }

@@ -1,3 +1,9 @@
-export default function Home() {
-    return <h1>Why, hello there!</h1>;
+import { Dashboard } from "@/components/dashboard";
+import { Landing } from "@/components/landing";
+import { getServerSession } from "@/server/auth";
+
+export default async function Home() {
+    const session = await getServerSession();
+
+    return !session ? <Landing /> : <Dashboard session={session} />;
 }
