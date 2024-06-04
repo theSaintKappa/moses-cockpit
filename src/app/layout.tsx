@@ -17,7 +17,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
 
     return (
         <html lang="en" className={cn(GeistSans.variable, GeistMono.variable)}>
-            <body>
+            <body suppressHydrationWarning>
                 <SessionProvider session={session}>{children}</SessionProvider>
             </body>
         </html>
