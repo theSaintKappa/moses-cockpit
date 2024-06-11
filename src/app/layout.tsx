@@ -5,7 +5,7 @@ import "./globals.css";
 import { SessionProvider } from "@/components/session-provider";
 import { UserCheckProvider } from "@/components/user-check-provider";
 import { cn } from "@/lib/utils";
-import { getServerSession } from "next-auth";
+import { getServerSession } from "@/server/auth";
 
 export const metadata: Metadata = {
     title: "Moses Cockpit",
@@ -20,7 +20,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <html lang="en" className={cn(GeistSans.variable, GeistMono.variable)}>
             <body suppressHydrationWarning>
                 <SessionProvider session={session}>
-                    <UserCheckProvider>{children}</UserCheckProvider>
+                    <UserCheckProvider session={session}>{children}</UserCheckProvider>
                 </SessionProvider>
             </body>
         </html>

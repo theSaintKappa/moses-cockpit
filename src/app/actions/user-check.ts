@@ -9,6 +9,7 @@ export default async function userCheck(accessToken: string) {
 
     if (!response.ok) {
         const error: RESTError = await response.json();
+        // 10004 Unknown guild
         if (error.code === 10004) return { error: null, isMember: false, hasRole: false };
         return { error, isMember: false, hasRole: false };
     }

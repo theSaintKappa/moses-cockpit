@@ -2,7 +2,7 @@
 
 import userCheck from "@/app/actions/user-check";
 import type { RESTError } from "discord-api-types/v10";
-import { useSession } from "next-auth/react";
+import type { Session } from "next-auth";
 import { type PropsWithChildren, createContext, useContext, useEffect, useState } from "react";
 
 interface UserCheck {
@@ -21,12 +21,11 @@ const initialState: UserCheck = {
 
 const UserCheckProviderContext = createContext<UserCheck>(initialState);
 
-export function UserCheckProvider({ children }: PropsWithChildren) {
+export function UserCheckProvider({ children, session }: PropsWithChildren<{ session: Session | null }>) {
     const [state, setState] = useState<UserCheck>(initialState);
-    const { data: session } = useSession();
 
     useEffect(() => {
-        if (session?.account?.access_token)
+        if (session?.account.access_token)
             userCheck(session.account.access_token).then((response) => {
                 setState({ ...response, isLoading: false });
             });
@@ -34,7 +33,7 @@ export function UserCheckProvider({ children }: PropsWithChildren) {
         return () => {
             setState(initialState);
         };
-    }, [session?.account?.access_token]);
+    }, [session?.account.access_token]);
 
     return <UserCheckProviderContext.Provider value={state}>{children}</UserCheckProviderContext.Provider>;
 }
