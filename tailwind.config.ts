@@ -75,12 +75,17 @@ const config = {
                     "0%": { opacity: "0", filter: "blur(65px)", transform: "scale(1.3)" },
                     "100%": { opacity: "1", filter: "blur(0)", transform: "scale(1)" },
                 },
+                "fade-in": {
+                    "0%": { opacity: "0" },
+                    "100%": { opacity: "1" },
+                },
             },
             animation: {
                 "accordion-down": "accordion-down 0.2s ease-out",
                 "accordion-up": "accordion-up 0.2s ease-out",
                 "gallery-scroll": "gallery-scroll 150s linear infinite",
                 "gallery-fade-in": "gallery-fade-in 6s",
+                "fade-in": "fade-in 200ms ease-out",
             },
         },
     },

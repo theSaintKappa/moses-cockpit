@@ -1,6 +1,5 @@
 import { env } from "@/env";
-import type { APIUser } from "discord-api-types/v10";
-import { type Account, type DefaultSession, type NextAuthOptions, getServerSession as getServerAuthSession } from "next-auth";
+import { type Account, type DefaultSession, type NextAuthOptions, type Profile, getServerSession as getServerAuthSession } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
 import type { ProviderType } from "next-auth/providers/index";
 
@@ -9,7 +8,28 @@ type Snowflake = string;
 declare module "next-auth" {
     interface Session extends DefaultSession {
         account: Account;
-        profile: APIUser;
+        profile: Profile;
+    }
+
+    interface Profile {
+        id: Snowflake;
+        username: string;
+        avatar: string;
+        discriminator: string;
+        public_flags: number;
+        flags: number;
+        banner: string;
+        accent_color: number | null;
+        global_name: string;
+        avatar_decoration_data: null;
+        banner_color: null;
+        clan: null;
+        mfa_enabled: boolean;
+        locale: string;
+        premium_type: number;
+        email?: string;
+        verified: boolean;
+        image_url: string;
     }
 
     interface Account {
@@ -35,7 +55,7 @@ export const authOptions: NextAuthOptions = {
         },
         session({ session, token }) {
             session.account = token.account as Account;
-            session.profile = token.profile as APIUser;
+            session.profile = token.profile as Profile;
 
             return session;
         },

@@ -3,6 +3,7 @@ import { GeistSans } from "geist/font/sans";
 import type { Metadata } from "next";
 import "./globals.css";
 import { SessionProvider } from "@/components/session-provider";
+import { UserCheckProvider } from "@/components/user-check-provider";
 import { cn } from "@/lib/utils";
 import { getServerSession } from "next-auth";
 
@@ -18,7 +19,9 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
     return (
         <html lang="en" className={cn(GeistSans.variable, GeistMono.variable)}>
             <body suppressHydrationWarning>
-                <SessionProvider session={session}>{children}</SessionProvider>
+                <SessionProvider session={session}>
+                    <UserCheckProvider>{children}</UserCheckProvider>
+                </SessionProvider>
             </body>
         </html>
     );
