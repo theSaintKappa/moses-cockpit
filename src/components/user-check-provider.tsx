@@ -1,6 +1,6 @@
 "use client";
 
-import userCheck from "@/app/actions/user-check";
+import userCheck, { UserCheckResponse } from "@/app/actions/user-check";
 import type { RESTError } from "discord-api-types/v10";
 import type { Session } from "next-auth";
 import { type PropsWithChildren, createContext, useContext, useEffect, useState } from "react";
@@ -8,14 +8,16 @@ import { type PropsWithChildren, createContext, useContext, useEffect, useState 
 interface UserCheck {
     isLoading: boolean;
     isMember: boolean;
-    hasRole: boolean;
+    isClassmate: boolean;
+    isCockpitAdmin: boolean;
     error: RESTError | null;
 }
 
 const initialState: UserCheck = {
     isLoading: true,
     isMember: false,
-    hasRole: false,
+    isClassmate: false,
+    isCockpitAdmin: false,
     error: null,
 };
 
