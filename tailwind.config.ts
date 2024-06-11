@@ -72,20 +72,25 @@ const config = {
                     "100%": { transform: "translateY(calc(-100% + 100vh))" },
                 },
                 "gallery-fade-in": {
-                    "0%": { opacity: "0", filter: "blur(65px)", transform: "scale(1.3)" },
+                    "0%": { opacity: "0.5", filter: "blur(100px)", transform: "scale(2.65)" },
                     "100%": { opacity: "1", filter: "blur(0)", transform: "scale(1)" },
                 },
                 "fade-in": {
                     "0%": { opacity: "0" },
                     "100%": { opacity: "1" },
                 },
+                "fly-in": {
+                    "0%": { transform: "translateY(-250%)", opacity: "0" },
+                    "100%": { transform: "translateY(0)", opacity: "1" },
+                },
             },
             animation: {
                 "accordion-down": "accordion-down 0.2s ease-out",
                 "accordion-up": "accordion-up 0.2s ease-out",
                 "gallery-scroll": "gallery-scroll 150s linear infinite",
-                "gallery-fade-in": "gallery-fade-in 6s",
+                "gallery-fade-in": "gallery-fade-in 3s",
                 "fade-in": "fade-in 200ms ease-out",
+                "fly-in": "fly-in 750ms ease forwards 2s",
             },
         },
     },

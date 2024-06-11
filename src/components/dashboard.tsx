@@ -1,5 +1,3 @@
-"use client";
-
 import { Header } from "@/components/header";
 import type { Session } from "next-auth";
 

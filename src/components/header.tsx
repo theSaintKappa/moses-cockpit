@@ -5,11 +5,11 @@ import { UserCheckDisplay } from "./user-check-dsiplay";
 
 export function Header({ session }: { session: Session }) {
     return (
-        <header className="fixed w-screen p-8">
+        <header className="fixed w-screen p-6 sm:p-8">
             <div className="max-w-7xl mx-auto flex justify-between">
                 <Logo className="h-16 w-auto" />
                 <div className="flex items-center gap-4">
-                    <div className="hidden md:block">
+                    <div className="hidden sm:block">
                         <UserCheckDisplay size={5} />
                     </div>
                     <AvatarDropdown session={session} />

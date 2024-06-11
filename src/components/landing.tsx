@@ -9,9 +9,9 @@ export async function Landing() {
     return (
         <>
             <main className="h-supports-dvh w-screen flex justify-center items-center fixed z-10 p-8">
-                <div className="rounded-lg border-2 border-primary shadow-card py-16 flex flex-col items-center gap-8 bg-card w-full max-w-lg md:max-w-xl">
-                    <Logo className="h-28 md:h-32 w-auto" />
-                    <p className="text-muted-foreground text-center text-[0.825rem] md:text-base flex gap-1 justify-center items-center">
+                <div className="rounded-lg border-2 border-primary shadow-card py-16 flex flex-col items-center gap-8 bg-card w-full max-w-lg md:max-w-xl animate-fly-in -translate-y-[250px] opacity-0">
+                    <Logo className="h-24 md:h-36 w-auto" />
+                    <p className="text-muted-foreground text-center text-[0.8rem] md:text-base flex gap-0.5 justify-center items-center">
                         <Info className="h-4 min-w-4 md:h-5 md:min-w-5" />
                         You need to sign in to access the dashboard
                     </p>
