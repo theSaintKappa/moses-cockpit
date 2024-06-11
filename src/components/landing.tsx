@@ -8,8 +8,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/t
 export async function Landing() {
     return (
         <>
-            <main className="h-supports-dvh w-screen flex justify-center items-center fixed z-10 p-8">
-                <div className="rounded-lg border-2 border-primary shadow-card py-16 flex flex-col items-center gap-8 bg-card w-full max-w-lg md:max-w-xl animate-fly-in -translate-y-[250px] opacity-0">
+            <main className="h-supports-dvh w-screen flex justify-center items-center fixed z-10 p-4">
+                <div className="rounded-lg border-2 border-primary shadow-card py-16 flex flex-col items-center gap-8 backdrop-blur-xl backdrop-brightness-[0.2] w-full max-w-lg md:max-w-xl animate-fly-in">
                     <Logo className="h-24 md:h-36 w-auto" />
                     <p className="text-muted-foreground text-center text-[0.8rem] md:text-base flex gap-0.5 justify-center items-center">
                         <Info className="h-4 min-w-4 md:h-5 md:min-w-5" />
