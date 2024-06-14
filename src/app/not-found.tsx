@@ -15,12 +15,12 @@ export default async function NotFoundPage() {
 
     return (
         <>
-            <Logo className="absolute z-10 bottom-0 right-0 m-8 h-20 w-auto" />
-            <main className="relative flex flex-col items-center justify-center gap-8 h-supports-dvh w-screen">
-                <Image src={image.url} alt="404 Not Found" fill={true} className="absolute inset-0 brightness-[0.1]" />
+            <Logo className="absolute z-10 bottom-0 right-0 m-8 h-14 md:h-20 w-auto" />
+            <main className="flex flex-col items-center justify-center gap-8 h-supports-dvh w-screen p-4">
+                <Image src={image.url} alt="404 Not Found" layout="fill" className="absolute size-full brightness-[0.2] pointer-events-none" />
                 <div className="z-10 text-center flex flex-col gap-6 drop-shadow-[2px_2px_3px_rgb(0,0,0)]">
-                    <span className="text-8xl italic text-primary font-black">Uh oh...</span>
-                    <h1 className="text-4xl font-semibold text-primary-foreground">It looks like the page you're looking for doesn't exist</h1>
+                    <span className="text-6xl md:text-8xl italic text-primary font-black">Uh oh...</span>
+                    <h1 className="text-2xl md:text-4xl font-semibold text-primary-foreground text-balance">It looks like the page you're looking for doesn't exist</h1>
                 </div>
                 <Button variant="link" className="z-10 text-xl" asChild>
                     <Link href="/">
