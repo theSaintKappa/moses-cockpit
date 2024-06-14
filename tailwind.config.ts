@@ -18,39 +18,39 @@ const config = {
                 mono: ["var(--font-geist-mono)"],
             },
             colors: {
-                border: "hsl(var(--border))",
-                input: "hsl(var(--input))",
-                ring: "hsl(var(--ring))",
-                background: "hsl(var(--background))",
-                foreground: "hsl(var(--foreground))",
                 blurple: "hsl(var(--blurple))",
+                border: "hsl(var(--border) / <alpha-value>)",
+                input: "hsl(var(--input) / <alpha-value>)",
+                ring: "hsl(var(--ring) / <alpha-value>)",
+                background: "hsl(var(--background) / <alpha-value>)",
+                foreground: "hsl(var(--foreground) / <alpha-value>)",
                 primary: {
-                    DEFAULT: "hsl(var(--primary))",
-                    foreground: "hsl(var(--primary-foreground))",
+                    DEFAULT: "hsl(var(--primary) / <alpha-value>)",
+                    foreground: "hsl(var(--primary-foreground) / <alpha-value>)",
                 },
                 secondary: {
-                    DEFAULT: "hsl(var(--secondary))",
-                    foreground: "hsl(var(--secondary-foreground))",
+                    DEFAULT: "hsl(var(--secondary) / <alpha-value>)",
+                    foreground: "hsl(var(--secondary-foreground) / <alpha-value>)",
                 },
                 destructive: {
-                    DEFAULT: "hsl(var(--destructive))",
-                    foreground: "hsl(var(--destructive-foreground))",
+                    DEFAULT: "hsl(var(--destructive) / <alpha-value>)",
+                    foreground: "hsl(var(--destructive-foreground) / <alpha-value>)",
                 },
                 muted: {
-                    DEFAULT: "hsl(var(--muted))",
-                    foreground: "hsl(var(--muted-foreground))",
+                    DEFAULT: "hsl(var(--muted) / <alpha-value>)",
+                    foreground: "hsl(var(--muted-foreground) / <alpha-value>)",
                 },
                 accent: {
-                    DEFAULT: "hsl(var(--accent))",
-                    foreground: "hsl(var(--accent-foreground))",
+                    DEFAULT: "hsl(var(--accent) / <alpha-value>)",
+                    foreground: "hsl(var(--accent-foreground) / <alpha-value>)",
                 },
                 popover: {
-                    DEFAULT: "hsl(var(--popover))",
-                    foreground: "hsl(var(--popover-foreground))",
+                    DEFAULT: "hsl(var(--popover) / <alpha-value>)",
+                    foreground: "hsl(var(--popover-foreground) / <alpha-value>)",
                 },
                 card: {
-                    DEFAULT: "hsl(var(--card))",
-                    foreground: "hsl(var(--card-foreground))",
+                    DEFAULT: "hsl(var(--card) / <alpha-value>)",
+                    foreground: "hsl(var(--card-foreground) / <alpha-value>)",
                 },
             },
             borderRadius: {
@@ -72,7 +72,7 @@ const config = {
                     "100%": { transform: "translateY(calc(-100% + 100vh))" },
                 },
                 "gallery-fade-in": {
-                    "0%": { opacity: "0", filter: "blur(100px)", transform: "scale(3) rotateX(0.05deg)" },
+                    "0%": { opacity: "0", filter: "blur(100px)", transform: "scale(4) rotateX(0.075deg)" },
                     "50%": { opacity: "0.75" },
                     "100%": { opacity: "1", filter: "blur(0)", transform: "scale(1) perspective(0)" },
                 },
@@ -80,9 +80,13 @@ const config = {
                     "0%": { opacity: "0" },
                     "100%": { opacity: "1" },
                 },
-                "fly-in": {
+                "login-modal": {
                     "0%": { transform: "translateY(-250%)", opacity: "0" },
                     "100%": { transform: "translateY(0)", opacity: "1" },
+                },
+                "panel-card": {
+                    "0%": { transform: "translateY(-50%)", opacity: "0", scale: "1.05" },
+                    "100%": { transform: "translateY(0)", opacity: "1", scale: "1" },
                 },
             },
             animation: {
@@ -91,7 +95,8 @@ const config = {
                 "gallery-scroll": "gallery-scroll 150s linear infinite",
                 "gallery-fade-in": "gallery-fade-in 3s ease",
                 "fade-in": "fade-in 200ms ease-out",
-                "fly-in": "fly-in 750ms ease",
+                "login-modal": "login-modal 750ms ease",
+                "panel-card": "panel-card 500ms forwards ease",
             },
         },
     },

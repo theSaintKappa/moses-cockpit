@@ -10,7 +10,7 @@ export function UserCheckDisplay({ style = "loose" }: { style?: "loose" | "compa
     const userCheck = useUserCheck();
 
     const sizeClass = style === "loose" ? "h-5 w-5" : "h-4 w-4";
-    const paddingClass = style === "loose" ? "py-3 px-4" : "py-1.5 px-2";
+    const paddingClass = style === "loose" ? "py-2.5 px-3.5" : "py-1.5 px-2.5";
 
     // Note to future self: You can't construct class names dynamically in Tailwind
     const textColors = { true: "text-green-500", false: "text-red-500", error: "text-yellow-400" };

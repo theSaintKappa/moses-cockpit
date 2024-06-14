@@ -72,4 +72,10 @@
         -moz-column-count: 3;
         -webkit-column-count: 3;
     }
+
+    .card-bg-pattern {
+        background-image: radial-gradient(hsl(var(--primary)) 1px, transparent 1px), radial-gradient(hsl(var(--primary)) 1px, transparent 1px);
+        background-size: 40px 40px;
+        background-position: 0 0, 20px 20px;
+    }
 }

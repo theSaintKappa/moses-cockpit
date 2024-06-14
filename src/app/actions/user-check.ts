@@ -17,6 +17,5 @@ export default async function userIdentityCheck(accessToken: string): Promise<Us
     }
 
     const guildsResponse: APIGuildMember = await response.json();
-    console.log(guildsResponse);
     return { error: null, isMember: true, isClassmate: guildsResponse.roles?.includes(env.DISCORD_CLASS_ROLE_ID) ?? false, isCockpitAdmin: guildsResponse.roles?.includes(env.DISCORD_COCKPIT_ADMIN_ROLE_ID) ?? false };
 }

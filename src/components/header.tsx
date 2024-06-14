@@ -6,7 +6,7 @@ import { UserCheckDisplay } from "./user-check-dsiplay";
 
 export function Header({ session }: { session: Session }) {
     return (
-        <header className="sticky top-0 h-28 bg-background">
+        <header className="sticky top-0 z-10 h-28 bg-background">
             <div className="h-full max-w-[100rem] mx-auto flex justify-between p-6">
                 <div>
                     <Logo className="h-[112.5%] w-auto" />
