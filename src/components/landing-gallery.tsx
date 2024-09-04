@@ -1,4 +1,6 @@
+"use client";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 
 interface ImageApiResponse {
     id: string;
@@ -6,10 +8,19 @@ interface ImageApiResponse {
     [key: string]: unknown;
 }
 
-export async function LandingGallery() {
-    const images: ImageApiResponse[] = await fetch("https://api.saintkappa.dev/moses/pics?excludeTypes=image/gif&sample=150", { next: { revalidate: 5 } })
-        .then((res) => res.json())
-        .catch(() => []);
+export function LandingGallery() {
+    // const images: ImageApiResponse[] = await fetch("https://api.saintkappa.dev/moses/pics?excludeTypes=image/gif&sample=150", { next: { revalidate: 5 } })
+    //     .then((res) => res.json())
+    //     .catch(() => []);
+
+    const [images, setImages] = useState<ImageApiResponse[]>([]);
+
+    useEffect(() => {
+        fetch("https://api.saintkappa.dev/moses/pics?excludeTypes=image/gif&sample=150", { next: { revalidate: 5 } })
+            .then((res) => res.json())
+            .then((data) => setImages(data))
+            .catch(() => setImages([]));
+    }, []);
 
     return (
         <div className="overflow-hidden">

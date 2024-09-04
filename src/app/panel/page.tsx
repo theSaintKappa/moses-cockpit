@@ -1,15 +1,8 @@
-import { Header } from "@/components/header";
 import { PanelCard } from "@/components/panel-card";
 import type { PanelCardProps } from "@/components/panel-card";
-import { getServerSession } from "@/server/auth";
 import { Award, FileClock, ImagePlus, Images, ListStart, Quote, Watch } from "lucide-react";
-import { redirect } from "next/navigation";
 
 export default async function Page() {
-    const session = await getServerSession();
-
-    if (!session) return redirect("/");
-
     const panelCards: Omit<PanelCardProps, "index">[] = [
         { title: "Pics", description: "Upload & submit new Moses Pics", path: "/panel/pics", icon: ImagePlus },
         { title: "Quotes", description: "Display & manage Moses Quotes", path: "/panel/quotes", icon: Quote, disabled: true },
@@ -21,15 +14,10 @@ export default async function Page() {
     ];
 
     return (
-        <>
-            <Header session={session} />
-            <main className="min-h-[calc(100dvh-8rem)] max-w-[100rem] mx-auto flex justify-center items-center p-8">
-                <section className="flex flex-wrap justify-center gap-8 md:gap-12">
-                    {panelCards.map(({ title, description, path, icon, disabled }, i) => (
-                        <PanelCard key={path} title={title} description={description} path={path} icon={icon} disabled={disabled ?? false} index={i} />
-                    ))}
-                </section>
-            </main>
-        </>
+        <main className="flex flex-wrap justify-center content-center gap-8 md:gap-12">
+            {panelCards.map(({ title, description, path, icon, disabled }, i) => (
+                <PanelCard key={path} title={title} description={description} path={path} icon={icon} disabled={disabled ?? false} index={i} />
+            ))}
+        </main>
     );
 }

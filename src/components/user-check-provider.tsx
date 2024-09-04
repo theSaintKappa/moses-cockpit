@@ -1,6 +1,6 @@
 "use client";
 
-import userCheck, { UserCheckResponse } from "@/app/actions/user-check";
+import userCheck from "@/app/actions/user-check";
 import type { RESTError } from "discord-api-types/v10";
 import type { Session } from "next-auth";
 import { type PropsWithChildren, createContext, useContext, useEffect, useState } from "react";

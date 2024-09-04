@@ -3,9 +3,9 @@
 import { env } from "@/env";
 import type { APIGuildMember, RESTError } from "discord-api-types/v10";
 
-export type UserCheckResponse = { error: null; isMember: boolean; isClassmate: boolean; isCockpitAdmin: boolean } | { error: RESTError; isMember: false; isClassmate: boolean; isCockpitAdmin: boolean };
+type UserCheckResponse = { error: null; isMember: boolean; isClassmate: boolean; isCockpitAdmin: boolean } | { error: RESTError; isMember: false; isClassmate: boolean; isCockpitAdmin: boolean };
 
-export default async function userIdentityCheck(accessToken: string): Promise<UserCheckResponse> {
+export default async function userCheck(accessToken: string): Promise<UserCheckResponse> {
     const url = `https://discord.com/api/v10/users/@me/guilds/${env.DISCORD_GUILD_ID}/member`;
     const response = await fetch(url, { headers: { Authorization: `Bearer ${accessToken}` }, next: { revalidate: 1 } });
 
