@@ -13,8 +13,13 @@ const envSchema = zod.object({
 
     GCP_PROJECT_ID: zod.string().min(1),
     GCP_SERVICE_ACCOUNT_EMAIL: zod.string().email().min(1),
-    GCP_PRIVATE_KEY: zod.string().min(1),
+    GCP_PRIVATE_KEY: zod
+        .string()
+        .min(1)
+        .transform((v) => v.replace(/\\n/g, "\n")),
     GCP_BUCKET_NAME: zod.string().min(1),
+
+    MONGO_URI: zod.string().min(1),
 });
 
 export const env = envSchema.parse(process.env);

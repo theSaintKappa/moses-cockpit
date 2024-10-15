@@ -1,50 +1,100 @@
 "use client";
 
-import generateSignedURL from "@/app/actions/image-upload";
+import { generateSignedURL, verifyToken } from "@/app/actions/image-upload";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { ALLOWED_FILE_TYPES, MAX_FILE_SIZE } from "@/lib/constants";
 import { cn } from "@/lib/utils";
-import { ImagePlus, Upload } from "lucide-react";
+import { ImagePlus, ImageUp, Loader2, SquareArrowOutUpRight, Trash2, Upload } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import { ErrorCode, type FileError, useDropzone } from "react-dropzone";
+import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
 
-type Image = File & { preview: string };
+type Image = File & { preview: string; id?: string; url?: string };
 
 export default function Page() {
     const [images, setImages] = useState<Image[]>([]);
     const [uploadProgress, setUploadProgress] = useState<number>(0);
+    const [uploadStatus, setUploadStatus] = useState<"ready" | "uploading" | "done">("ready");
 
     async function uploadImages() {
-        for (const [i, image] of images.entries()) {
-            const { url, message, id } = await generateSignedURL(image.type);
-            if (!url) return console.error(message);
+        setUploadStatus("uploading");
+        const startTime = performance.now();
+        const totalSteps = images.length * 3;
 
-            // setUploadProgress(((i + 1) / images.length) * 100);
-            setUploadProgress(prev => prev + ((i + 1) / images.length) * 100);
+        for (const [i, image] of images.entries()) {
+            const imageObject = new Image();
+            imageObject.src = image.preview;
+            const { url, message, id, cdnUrl, token } = await generateSignedURL(image.type, image.size, { width: imageObject.width, height: imageObject.height });
+            if (!url) {
+                console.error(message);
+                toast.error("Failed to generate signed URL");
+                return;
+            }
+
+            setUploadProgress(((i * 3 + 1) / totalSteps) * 100);
 
             const res = await fetch(url, {
                 method: "PUT",
-                headers: { "Content-Type": image.type },
+                headers: { "Content-Type": image.type, "X-Upload-Content-Length": image.size.toString(), "X-Goog-Content-Length-Range": `0,${image.size}` },
                 body: image,
             });
 
-            if (!res.ok) return console.error("Failed to upload image");
+            if (!res.ok) {
+                const message = await res.text();
+                console.error(message);
+                toast.error("Failed to upload image");
+                return;
+            }
 
-            setUploadProgress(((i + 1) / images.length) * 100);
+            setUploadProgress(((i * 3 + 2) / totalSteps) * 100);
+
+            const tokenVerified = await verifyToken(id, token);
+            if (!tokenVerified) {
+                toast.error("Failed to create image reference");
+                return;
+            }
+
+            setUploadProgress(((i * 3 + 3) / totalSteps) * 100);
+
+            images[i].id = id;
+            images[i].url = cdnUrl;
         }
+
+        const endTime = performance.now();
+        const uploadTime = ((endTime - startTime) / 1000).toFixed(2);
+
+        setUploadStatus("done");
+        toast.success("Success!", { description: `${images.length} image${images.length > 1 ? "s" : ""} took ${uploadTime}s` });
     }
 
     const onDrop = useCallback((files: File[]) => {
+        if (files.reduce((acc, file) => acc + file.size, 0) > MAX_FILE_SIZE) {
+            toast.error("Total upload size exceeds 100MB");
+            return;
+        }
+
+        if (files.some((file) => !ALLOWED_FILE_TYPES.includes(file.type))) {
+            toast.error("Invalid file type");
+            return;
+        }
+
         setImages(files.map((file) => Object.assign(file, { preview: URL.createObjectURL(file) })));
     }, []);
 
-    const validator = (file: File): FileError | null => {
-        const allowedTypes = ["image/png", "image/jpg", "image/webp", "image/gif"];
-        if (!allowedTypes.includes(file.type)) return { code: ErrorCode.FileInvalidType, message: "Only images are allowed" };
-        return null;
-    };
+    function cancelUpload() {
+        setImages([]);
+        setUploadProgress(0);
+        setUploadStatus("ready");
+    }
+
+    function bytesToSize(bytes: number) {
+        const sizes = ["Bytes", "KB", "MB"];
+        if (bytes === 0) return "0 Byte";
+        const i = Math.floor(Math.log(bytes) / Math.log(1024));
+        return `${Math.round(bytes / 1024 ** i)} ${sizes[i]}`;
+    }
 
     useEffect(() => {
         return () => {
@@ -52,7 +102,7 @@ export default function Page() {
         };
     }, [images]);
 
-    const { fileRejections, getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, validator });
+    const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
     return (
         <div className="grow p-6 flex flex-col gap-6">
@@ -70,10 +120,10 @@ export default function Page() {
                 </BreadcrumbList>
             </Breadcrumb>
             <main className="grow flex flex-col justify-center items-center gap-8">
-                {images.length === 0 ? (
+                {!images.length ? (
                     <div {...getRootProps()} className={cn("flex flex-col items-center gap-6 p-12 rounded-lg border border-dashed cursor-pointer hover:border-primary hover:border-2 transition-colors shadow-card", isDragActive && "border-primary border-2")}>
                         <input {...getInputProps()} />
-                        <Upload className="size-12 md:size-14 stroke-muted-foreground" />
+                        <Upload className={cn("size-12 md:size-14 stroke-muted-foreground", isDragActive && "stroke-primary")} />
                         <div className="flex flex-col items-center text-muted-foreground text-base md:text-lg text-center">
                             <p>Drag and drop images or click to select</p>
                             <p>
@@ -83,30 +133,40 @@ export default function Page() {
                     </div>
                 ) : (
                     <>
-                        <div className="bg-red-400 max-w-md w-full">
-                            <ul className="list-none">
-                                {images.map((image) => (
-                                    <li key={image.name}>
-                                        <img src={image.preview} alt={image.name} />
-                                        {image.name} - {image.size} bytes
-                                        {/* {JSON.stringify(image)} */}
-                                    </li>
-                                ))}
-                                {fileRejections.map(({ file, errors }) => (
-                                    <li key={file.name}>
-                                        {file.name} - {file.size} bytes
-                                        <ul>
-                                            {errors.map((error) => (
-                                                <li key={error.code}>{error.message}</li>
-                                            ))}
-                                        </ul>
-                                    </li>
-                                ))}
-                            </ul>
+                        <div className="flex flex-col gap-4">
+                            {images.map((image) => (
+                                <div key={image.name} className="flex items-center gap-8 p-4 bg-card shadow-card rounded-md">
+                                    <div className="flex items-center gap-4">
+                                        <a href={image.preview} target="_blank" rel="noreferrer" className="relative flex justify-center items-center group">
+                                            <SquareArrowOutUpRight className="absolute opacity-0 transition-all group-hover:opacity-100" />
+                                            <img src={image.preview} alt={image.name} className="shadow-card h-16 transition-all hover:opacity-40 " />
+                                        </a>
+                                        <div className="flex flex-col">
+                                            <p className="text-muted-foreground text-base md:text-lg">{image.name}</p>
+                                            <p className="text-muted-foreground text-base md:text-lg">{bytesToSize(image.size)}</p>
+                                            {image.id && (
+                                                <a href={image.url} target="_blank" rel="noreferrer" className="text-primary underline text-base md:text-lg">
+                                                    {image.id}
+                                                </a>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <Button variant="outline" className="p-2 h-auto" onClick={() => setImages(images.filter((i) => i !== image))}>
+                                        <Trash2 className="h-5 w-5" />
+                                    </Button>
+                                </div>
+                            ))}
                         </div>
-                        <Progress value={uploadProgress} />
-                        <Button onClick={() => setImages([])}>Cancel</Button>
-                        <Button onClick={() => uploadImages()}>Upload</Button>
+                        <Progress value={uploadProgress} className="max-w-3xl" />
+                        <div className="flex gap-4">
+                            <Button onClick={() => cancelUpload()} disabled={uploadStatus === "uploading"}>
+                                Cancel
+                            </Button>
+                            <Button onClick={() => uploadImages()} disabled={["uploading", "done"].includes(uploadStatus)}>
+                                {uploadStatus === "uploading" ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <ImageUp className="mr-2 h-5 w-5" />}
+                                Upload
+                            </Button>
+                        </div>
                     </>
                 )}
             </main>

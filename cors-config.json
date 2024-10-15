@@ -1,0 +1,8 @@
+[
+    {
+        "origin": ["http://localhost:3000", "https://cockpit.saintkappa.dev"],
+        "method": ["PUT", "OPTIONS"],
+        "responseHeader": ["Content-Type", "Access-Control-Allow-Origin", "X-Upload-Content-Length", "X-Goog-Content-Length-Range", "X-Goog-Resumable"],
+        "maxAgeSeconds": 3600
+    }
+]
