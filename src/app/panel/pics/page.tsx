@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { ALLOWED_FILE_TYPES, MAX_FILE_SIZE } from "@/lib/constants";
 import { cn } from "@/lib/utils";
-import { ImagePlus, ImageUp, Loader2, SquareArrowOutUpRight, Trash2, Upload } from "lucide-react";
+import { ChevronsDown, ImagePlus, ImageUp, Loader2, SquareArrowOutUpRight, Trash2, Upload } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
@@ -17,6 +17,7 @@ export default function Page() {
     const [images, setImages] = useState<Image[]>([]);
     const [uploadProgress, setUploadProgress] = useState<number>(0);
     const [uploadStatus, setUploadStatus] = useState<"ready" | "uploading" | "done">("ready");
+    const [isAtBottom, setIsAtBottom] = useState<boolean>(true);
 
     async function uploadImages() {
         setUploadStatus("uploading");
@@ -96,17 +97,28 @@ export default function Page() {
         return `${Math.round(bytes / 1024 ** i)} ${sizes[i]}`;
     }
 
+    function handleScroll() {
+        const scrollTop = window.scrollY;
+        const windowHeight = window.innerHeight;
+        const documentHeight = document.documentElement.scrollHeight;
+        const isBottom = scrollTop + windowHeight >= documentHeight - 10;
+        setIsAtBottom(isBottom);
+    }
+
     useEffect(() => {
+        window.addEventListener("scroll", handleScroll);
+        handleScroll();
+
         return () => {
             for (const image of images) URL.revokeObjectURL(image.preview);
         };
-    }, [images]);
+    }, [images, handleScroll]);
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
     return (
-        <div className="grow p-6 flex flex-col gap-6">
-            <Breadcrumb>
+        <div className="grow flex flex-col">
+            <Breadcrumb className="my-4 mx-6">
                 <BreadcrumbList>
                     <BreadcrumbItem>
                         <BreadcrumbLink href="/panel">Panel</BreadcrumbLink>
@@ -119,27 +131,29 @@ export default function Page() {
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
-            <main className="grow flex flex-col justify-center items-center gap-8">
+            <main className="grow flex flex-col justify-between items-center">
                 {!images.length ? (
-                    <div {...getRootProps()} className={cn("flex flex-col items-center gap-6 p-12 rounded-lg border border-dashed cursor-pointer hover:border-primary hover:border-2 transition-colors shadow-card", isDragActive && "border-primary border-2")}>
-                        <input {...getInputProps()} />
-                        <Upload className={cn("size-12 md:size-14 stroke-muted-foreground", isDragActive && "stroke-primary")} />
-                        <div className="flex flex-col items-center text-muted-foreground text-base md:text-lg text-center">
-                            <p>Drag and drop images or click to select</p>
-                            <p>
-                                <span className="font-semibold">PNG</span>, <span className="font-semibold">JPG</span>, <span className="font-semibold">WEBP</span> or <span className="font-semibold">GIF</span> up to <span className="font-semibold">100MB</span>
-                            </p>
+                    <div className="flex h-full w-full justify-center items-center p-4">
+                        <div {...getRootProps()} className={cn("w-full max-w-2xl flex flex-col items-center justify-center gap-6 py-24 sm:py-32 rounded-lg border border-dashed cursor-pointer hover:border-primary hover:border-2 transition-colors shadow-card", isDragActive && "border-primary border-2")}>
+                            <input {...getInputProps()} />
+                            <Upload className={cn("size-14 md:size-16 stroke-muted-foreground", isDragActive && "stroke-primary")} />
+                            <div className="flex flex-col items-center text-muted-foreground sm:text-xl text-center">
+                                <p>Drag and drop images or click to select</p>
+                                <p>
+                                    <span className="font-semibold">PNG</span>, <span className="font-semibold">JPG</span>, <span className="font-semibold">WEBP</span> or <span className="font-semibold">GIF</span> up to <span className="font-semibold">100MB</span>
+                                </p>
+                            </div>
                         </div>
                     </div>
                 ) : (
                     <>
-                        <div className="flex flex-col gap-4">
+                        <div className="w-full flex flex-col grow justify-center items-center gap-4 px-4">
                             {images.map((image) => (
-                                <div key={image.name} className="flex items-center gap-8 p-4 bg-card shadow-card rounded-md">
+                                <div key={image.name} className="w-full max-w-xl flex items-center justify-between gap-8 p-4 bg-card shadow-card rounded-md">
                                     <div className="flex items-center gap-4">
                                         <a href={image.preview} target="_blank" rel="noreferrer" className="relative flex justify-center items-center group">
                                             <SquareArrowOutUpRight className="absolute opacity-0 transition-all group-hover:opacity-100" />
-                                            <img src={image.preview} alt={image.name} className="shadow-card h-16 transition-all hover:opacity-40 " />
+                                            <img src={image.preview} alt={image.name} className="shadow-card h-28 transition-all hover:opacity-40 " />
                                         </a>
                                         <div className="flex flex-col">
                                             <p className="text-muted-foreground text-base md:text-lg">{image.name}</p>
@@ -151,20 +165,28 @@ export default function Page() {
                                             )}
                                         </div>
                                     </div>
-                                    <Button variant="outline" className="p-2 h-auto" onClick={() => setImages(images.filter((i) => i !== image))}>
-                                        <Trash2 className="h-5 w-5" />
+                                    <Button variant="outline" className="p-3 h-auto" onClick={() => setImages(images.filter((i) => i !== image))}>
+                                        <Trash2 className="h-6 w-6" />
                                     </Button>
                                 </div>
                             ))}
                         </div>
-                        <Progress value={uploadProgress} className="max-w-3xl" />
-                        <div className="flex gap-4">
-                            <Button onClick={() => cancelUpload()} disabled={uploadStatus === "uploading"}>
-                                Cancel
-                            </Button>
-                            <Button onClick={() => uploadImages()} disabled={["uploading", "done"].includes(uploadStatus)}>
-                                {uploadStatus === "uploading" ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <ImageUp className="mr-2 h-5 w-5" />}
-                                Upload
+                        <div className="w-full sticky bottom-0 flex flex-col items-center">
+                            <div className="w-full p-6 flex flex-col items-center gap-6 backdrop-blur-xl z-10" style={{ mask: "linear-gradient(to bottom, transparent, black 4%)" }}>
+                                <Progress value={uploadProgress} className="max-w-4xl" />
+                                <div className="flex gap-4">
+                                    <Button size="lg" variant="outline" onClick={() => cancelUpload()} disabled={uploadStatus === "uploading"}>
+                                        Cancel
+                                    </Button>
+                                    <Button size="lg" onClick={() => uploadImages()} disabled={["uploading", "done"].includes(uploadStatus)}>
+                                        {uploadStatus === "uploading" ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <ImageUp className="mr-2 h-5 w-5" />}
+                                        Upload
+                                    </Button>
+                                </div>
+                            </div>
+                            <Button variant="link" size="icon" className={cn("absolute -top-6 z-0 h-14 flex pt-6 transition-all opacity-0", !isAtBottom && "opacity-100 -top-14")} onClick={() => window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "smooth" })}>
+                                <span className="sr-only">scroll to bottom</span>
+                                <ChevronsDown className="h-12 w-12 stroke-primary animate-bounce" />
                             </Button>
                         </div>
                     </>

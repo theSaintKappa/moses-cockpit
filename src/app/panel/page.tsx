@@ -16,7 +16,7 @@ export default function Page() {
     ];
 
     return (
-        <main className="flex flex-wrap justify-center content-center gap-8 md:gap-12">
+        <main className="flex flex-wrap justify-center content-center gap-8 md:gap-12 p-6">
             {panelCards.map(({ title, description, path, icon, permission, disabled }, i) => (
                 <PanelCard key={path} title={title} description={description} path={path} icon={icon} permission={permission} disabled={disabled ?? false} index={i} />
             ))}
