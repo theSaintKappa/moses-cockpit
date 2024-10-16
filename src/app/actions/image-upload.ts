@@ -4,8 +4,8 @@ import userCheck from "@/app/actions/user-check";
 import { env } from "@/env";
 import { MAX_FILE_SIZE } from "@/lib/constants";
 import { connectMongo } from "@/lib/db";
-import { Pic } from "@/models/Pic";
-import { PicToken } from "@/models/PicToken";
+import { CockpitPicToken } from "@/models/CockpitPicToken";
+import { MosesPic } from "@/models/MosesPic";
 import { getServerSession } from "@/server/auth";
 import { Storage } from "@google-cloud/storage";
 import { customAlphabet, nanoid } from "nanoid";
@@ -42,7 +42,7 @@ export async function generateSignedURL(contentType: string, imageSize: number, 
     const cdnUrl = `https://${env.GCP_BUCKET_NAME}/moses/${id}`;
 
     await connectMongo();
-    await PicToken.create({ id, url: cdnUrl, submitterId: session.profile.id, size: imageSize, dimensions, contentType, token });
+    await CockpitPicToken.create({ id, url: cdnUrl, submitterId: session.profile.id, size: imageSize, dimensions, contentType, token });
 
     return { status: 200, message: "Success", url, id, cdnUrl, token };
 }
@@ -50,12 +50,12 @@ export async function generateSignedURL(contentType: string, imageSize: number, 
 export async function verifyToken(id: string, token: string) {
     await connectMongo();
 
-    const storedToken = await PicToken.findOne({ id, token });
+    const storedToken = await CockpitPicToken.findOne({ id, token });
     if (!storedToken || storedToken.token !== token) return false;
 
     const { submitterId, size, dimensions, contentType } = storedToken;
 
-    await Pic.create({ id, url: `https://${env.GCP_BUCKET_NAME}/moses/${id}`, submitterId, size, dimensions, contentType });
+    await MosesPic.create({ id, url: `https://${env.GCP_BUCKET_NAME}/moses/${id}`, submitterId, size, dimensions, contentType });
     await storedToken.deleteOne();
 
     return true;
