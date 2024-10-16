@@ -1,6 +1,5 @@
 "use server";
 
-import crypto from "node:crypto";
 import userCheck from "@/app/actions/user-check";
 import { env } from "@/env";
 import { MAX_FILE_SIZE } from "@/lib/constants";
@@ -9,9 +8,9 @@ import { Pic } from "@/models/Pic";
 import { PicToken } from "@/models/PicToken";
 import { getServerSession } from "@/server/auth";
 import { Storage } from "@google-cloud/storage";
-import { customAlphabet } from "nanoid";
+import { customAlphabet, nanoid } from "nanoid";
 
-const nanoid = customAlphabet("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz", 8);
+const generateId = customAlphabet("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz", 8);
 
 const allowedTypes = ["image/png", "image/jpeg", "image/gif", "image/webp"];
 
@@ -29,8 +28,8 @@ export async function generateSignedURL(contentType: string, imageSize: number, 
     const storage = new Storage({ projectId: env.GCP_PROJECT_ID, credentials: { client_email: env.GCP_SERVICE_ACCOUNT_EMAIL, private_key: env.GCP_PRIVATE_KEY } });
     const bucket = storage.bucket(env.GCP_BUCKET_NAME);
 
-    const id = nanoid();
-    const token = crypto.randomBytes(16).toString("hex");
+    const id = generateId();
+    const token = nanoid();
 
     const [url] = await bucket.file(`moses/${id}`).getSignedUrl({
         version: "v4",
@@ -50,10 +49,14 @@ export async function generateSignedURL(contentType: string, imageSize: number, 
 
 export async function verifyToken(id: string, token: string) {
     await connectMongo();
+
     const storedToken = await PicToken.findOne({ id, token });
     if (!storedToken || storedToken.token !== token) return false;
+
     const { submitterId, size, dimensions, contentType } = storedToken;
+
     await Pic.create({ id, url: `https://${env.GCP_BUCKET_NAME}/moses/${id}`, submitterId, size, dimensions, contentType });
     await storedToken.deleteOne();
+
     return true;
 }
