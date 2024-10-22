@@ -25,4 +25,4 @@ const schema = new Schema<ICockpitPicToken>(
     { timestamps: true, versionKey: false },
 );
 
-export const CockpitPicToken = models.CockpitPicToken || model<ICockpitPicToken>("cockpit.picTokens", schema, "cockpit.picTokens");
+export const CockpitPicToken = models["cockpit.picTokens"] || model<ICockpitPicToken>("cockpit.picTokens", schema, "cockpit.picTokens");

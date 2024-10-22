@@ -1,15 +1,18 @@
-import { PicUpload } from "@/components/pic-upload";
+import { getLogs } from "@/app/actions/logs";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { ImagePlus } from "lucide-react";
+import { ScrollText } from "lucide-react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Upload Pics",
+    title: "Logs",
 };
 
-export default function Page() {
+export default async function Page() {
+    const logsResponse = await getLogs();
+    if (!("logs" in logsResponse)) return null;
+
     return (
-        <div className="grow flex flex-col">
+        <div className="flex flex-col w-full">
             <Breadcrumb className="my-4 mx-6">
                 <BreadcrumbList>
                     <BreadcrumbItem>
@@ -18,13 +21,17 @@ export default function Page() {
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
                         <BreadcrumbPage className="flex items-center">
-                            <ImagePlus className="h-4 min-w-4" /> Moses Pics
+                            <ScrollText className="h-4 min-w-4" /> Cockpit Logs
                         </BreadcrumbPage>
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
-            <main className="grow flex flex-col justify-between items-center">
-                <PicUpload />
+            <main className="flex flex-col px-6">
+                {logsResponse.logs.map((log) => (
+                    <div key={log._id} className="border rounded-lg p-4 mt-4">
+                        <pre className="text-wrap text-sm">{JSON.stringify(log, null, 4)}</pre>
+                    </div>
+                ))}
             </main>
         </div>
     );

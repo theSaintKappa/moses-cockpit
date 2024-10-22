@@ -8,7 +8,10 @@ import { cn } from "@/lib/utils";
 import { getServerSession } from "@/server/auth";
 
 export const metadata: Metadata = {
-    title: "Moses Cockpit",
+    title: {
+        template: "%s | Moses Cockpit",
+        default: "Moses Cockpit",
+    },
     description: "App for interacting with MosesBot on the web!",
     authors: { name: "SaintKappa", url: "https://saintkappa.dev" },
 };

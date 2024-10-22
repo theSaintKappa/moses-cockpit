@@ -25,4 +25,4 @@ const schema = new Schema<IMosesPic>(
     { timestamps: true, versionKey: false },
 );
 
-export const MosesPic = models.MosesPic || model<IMosesPic>("moses.pics", schema, "moses.pics");
+export const MosesPic = models["moses.pics"] || model<IMosesPic>("moses.pics", schema, "moses.pics");

@@ -9,6 +9,7 @@ import { MosesPic } from "@/models/MosesPic";
 import { getServerSession } from "@/server/auth";
 import { Storage } from "@google-cloud/storage";
 import { customAlphabet, nanoid } from "nanoid";
+import { createLog } from "./logs";
 
 const generateId = customAlphabet("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz", 8);
 
@@ -55,8 +56,10 @@ export async function verifyToken(id: string, token: string) {
 
     const { submitterId, size, dimensions, contentType } = storedToken;
 
-    await MosesPic.create({ id, url: `https://${env.GCP_BUCKET_NAME}/moses/${id}`, submitterId, size, dimensions, contentType });
+    const url = `https://${env.GCP_BUCKET_NAME}/moses/${id}`;
+    await MosesPic.create({ id, url, submitterId, size, dimensions, contentType });
     await storedToken.deleteOne();
+    createLog({ action: "image-upload", metadata: { userId: submitterId, url, uploadedAt: Date.now() } });
 
     return true;
 }
