@@ -1,0 +1,52 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("MONGO_URI")
+}
+
+type Dimensions {
+  width  Int
+  height Int
+}
+
+model MosesPic {
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  picId       String     @unique @map("id")
+  url         String     @unique
+  submitterId String
+  size        Int
+  dimensions  Dimensions
+  contentType String
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@map("moses.pics")
+}
+
+model CockpitPicToken {
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  picId       String     @unique @map("id")
+  url         String     @unique
+  submitterId String
+  size        Int
+  dimensions  Dimensions
+  contentType String
+  token       String
+  expireAt    DateTime   @default(now()) @map("expireAt")
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@map("cockpit.picTokens")
+}
+
+model CockpitLog {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  action    String
+  metadata  Json
+  createdAt DateTime @default(now())
+
+  @@map("cockpit.logs")
+}

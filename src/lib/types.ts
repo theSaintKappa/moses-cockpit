@@ -3,8 +3,3 @@ export interface ImageApiResponse {
     url: string;
     [key: string]: unknown;
 }
-
-export interface DocumentTimestamps {
-    createdAt: Date;
-    updatedAt: Date;
-}

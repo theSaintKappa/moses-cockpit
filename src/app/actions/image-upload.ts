@@ -3,13 +3,10 @@
 import userCheck from "@/app/actions/user-check";
 import { env } from "@/env";
 import { MAX_FILE_SIZE } from "@/lib/constants";
-import { connectMongo } from "@/lib/db";
-import { CockpitPicToken } from "@/models/CockpitPicToken";
-import { MosesPic } from "@/models/MosesPic";
+import { prisma } from "@/lib/prisma";
 import { getServerSession } from "@/server/auth";
 import { Storage } from "@google-cloud/storage";
 import { customAlphabet, nanoid } from "nanoid";
-import { createLog } from "./logs";
 
 const generateId = customAlphabet("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz", 8);
 
@@ -42,24 +39,21 @@ export async function generateSignedURL(contentType: string, imageSize: number, 
 
     const cdnUrl = `https://${env.GCP_BUCKET_NAME}/moses/${id}`;
 
-    await connectMongo();
-    await CockpitPicToken.create({ id, url: cdnUrl, submitterId: session.profile.id, size: imageSize, dimensions, contentType, token });
+    await prisma.cockpitPicToken.create({ data: { picId: id, url: cdnUrl, submitterId: session.profile.id, size: imageSize, dimensions, contentType, token } });
 
     return { status: 200, message: "Success", url, id, cdnUrl, token };
 }
 
 export async function verifyToken(id: string, token: string) {
-    await connectMongo();
-
-    const storedToken = await CockpitPicToken.findOne({ id, token });
+    const storedToken = await prisma.cockpitPicToken.findUnique({ where: { picId: id, token } });
     if (!storedToken || storedToken.token !== token) return false;
 
     const { submitterId, size, dimensions, contentType } = storedToken;
 
     const url = `https://${env.GCP_BUCKET_NAME}/moses/${id}`;
-    await MosesPic.create({ id, url, submitterId, size, dimensions, contentType });
-    await storedToken.deleteOne();
-    createLog({ action: "image-upload", metadata: { userId: submitterId, url, uploadedAt: Date.now() } });
+    await prisma.mosesPic.create({ data: { picId: id, url, submitterId, size, dimensions, contentType } });
+    await prisma.cockpitPicToken.delete({ where: { picId: id } });
+    await prisma.cockpitLog.create({ data: { action: "image-upload", metadata: { userId: submitterId, url, uploadedAt: Date.now() } } });
 
     return true;
 }

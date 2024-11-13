@@ -1,5 +1,5 @@
-import { getLogs } from "@/app/actions/logs";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { prisma } from "@/lib/prisma";
 import { ScrollText } from "lucide-react";
 import type { Metadata } from "next";
 
@@ -8,8 +8,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-    const logsResponse = await getLogs();
-    if (!("logs" in logsResponse)) return null;
+    const logsResponse = await prisma.cockpitLog.findMany({ orderBy: { createdAt: "desc" } });
 
     return (
         <div className="flex flex-col w-full">
@@ -27,8 +26,8 @@ export default async function Page() {
                 </BreadcrumbList>
             </Breadcrumb>
             <main className="flex flex-col px-6">
-                {logsResponse.logs.map((log) => (
-                    <div key={log._id} className="border rounded-lg p-4 mt-4">
+                {logsResponse.map((log) => (
+                    <div key={log.id} className="border rounded-lg p-4 mt-4">
                         <pre className="text-wrap text-sm">{JSON.stringify(log, null, 4)}</pre>
                     </div>
                 ))}
