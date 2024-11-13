@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
     return (
-        <main className="flex flex-wrap justify-center content-center gap-8 md:gap-12 p-6">
+        <main className="flex flex-wrap justify-center content-center max-w-7xl mx-auto gap-6 p-6">
             <PanelCards />
         </main>
     );
