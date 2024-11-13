@@ -11,6 +11,8 @@ const envSchema = zod.object({
     DISCORD_CLASS_ROLE_ID: zod.string().min(1),
     DISCORD_COCKPIT_ADMIN_ROLE_ID: zod.string().min(1),
 
+    DISCORD_BOT_TOKEN: zod.string().min(1),
+
     GCP_PROJECT_ID: zod.string().min(1),
     GCP_SERVICE_ACCOUNT_EMAIL: zod.string().email().min(1),
     GCP_PRIVATE_KEY: zod
