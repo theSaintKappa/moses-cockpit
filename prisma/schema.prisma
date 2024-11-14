@@ -44,11 +44,15 @@ model CockpitPicToken {
 
 enum LogAction {
   image_upload
+  moses_quote_add
+  pt_quote_add
+  presence_change
 }
 
 model CockpitLog {
   id        String    @id @default(auto()) @map("_id") @db.ObjectId
   action    LogAction
+  invokerId String
   metadata  Json
   createdAt DateTime  @default(now())
 

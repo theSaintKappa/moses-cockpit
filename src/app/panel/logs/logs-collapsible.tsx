@@ -1,4 +1,4 @@
-import getUserProfile from "@/app/actions/user-profile";
+import { getUserProfile } from "@/app/actions/user-profile";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Separator } from "@/components/ui/separator";
 import type { CockpitLog } from "@prisma/client";
@@ -7,7 +7,7 @@ import Link from "next/link";
 
 export function LogsCollapsible({ date, logs }: { date: string; logs: CockpitLog[] }) {
     return (
-        <Collapsible className="space-y-2 w-full" defaultOpen>
+        <Collapsible className="space-y-2 w-full" defaultOpen={true}>
             <CollapsibleTrigger asChild className="flex items-center space-x-2 p-3 rounded-md cursor-pointer hover:bg-card">
                 <div>
                     <h2 className="font-medium text-md whitespace-nowrap">
@@ -24,12 +24,10 @@ export function LogsCollapsible({ date, logs }: { date: string; logs: CockpitLog
             </CollapsibleTrigger>
             <CollapsibleContent className="flex flex-wrap gap-2">
                 {logs.map(async (log) => {
-                    const profile = await getUserProfile((log.metadata as { [key: string]: string }).userId);
-                    const avatarUrl = `https://cdn.discordapp.com/avatars/${profile?.id}/${profile?.avatar}`;
-
+                    const profile = await getUserProfile(log.invokerId);
                     return (
                         <Link className="flex items-center rounded-md border p-2 space-x-2 font-mono text-sm hover:bg-card" key={log.id} href={`logs/${log.id}`}>
-                            <img className="size-7 rounded-full" src={avatarUrl} alt={profile?.global_name as string} />
+                            <img className="size-7 rounded-full" src={profile?.avatar_url} alt={profile?.global_name as string} />
                             <span className="space-x-1">
                                 <span className="font-bold">{profile?.global_name}</span>
                                 <ArrowRight className="size-4 inline" />

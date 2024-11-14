@@ -1,15 +1,18 @@
-import { LogsCollapsible } from "@/components/logs-collapsible";
+import { LogsCollapsible } from "@/app/panel/logs/logs-collapsible";
+import { LogsFilters } from "@/app/panel/logs/logs-filters";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { prisma } from "@/lib/prisma";
+import { LogAction } from "@prisma/client";
 import { ScrollText } from "lucide-react";
 import type { Metadata } from "next";
 
-export const metadata: Metadata = {
-    title: "Logs",
-};
+export const metadata: Metadata = { title: "Logs" };
 
-export default async function Page() {
-    const logsResponse = await prisma.cockpitLog.findMany({ orderBy: { createdAt: "desc" } });
+export default async function Page({ searchParams }: { searchParams?: { [key: string]: string | undefined } }) {
+    const logsResponse = await prisma.cockpitLog.findMany({
+        where: { action: Object.values(LogAction).includes(searchParams?.action as LogAction) ? (searchParams?.action as LogAction) : undefined, invokerId: searchParams?.invokerId ?? undefined },
+        orderBy: { createdAt: "desc" },
+    });
 
     const groupedLogs = logsResponse.reduce(
         (acc, log) => {
@@ -37,9 +40,8 @@ export default async function Page() {
                 </BreadcrumbList>
             </Breadcrumb>
             <main className="flex flex-col items-start gap-6 px-8 py-2">
-                {Object.entries(groupedLogs).map(([date, logs]) => (
-                    <LogsCollapsible key={date} date={date} logs={logs} />
-                ))}
+                <LogsFilters />
+                {logsResponse.length === 0 ? <p className="text-center">No logs found.</p> : Object.entries(groupedLogs).map(([date, logs]) => <LogsCollapsible key={date} date={date} logs={logs} />)}
             </main>
         </div>
     );

@@ -117,9 +117,9 @@ export function PicUpload() {
 
     return !images.length ? (
         <div className="flex h-full w-full justify-center items-center p-4">
-            <div {...getRootProps()} className={cn("w-full max-w-2xl flex flex-col items-center justify-center gap-6 py-24 sm:py-32 rounded-lg border border-dashed cursor-pointer hover:border-primary hover:border-2 transition-colors shadow-card", isDragActive && "border-primary border-2")}>
-                <input {...getInputProps()} />
-                <Upload className={cn("size-14 md:size-16 stroke-muted-foreground", isDragActive && "stroke-primary")} />
+            <div {...getRootProps()} className={cn("w-full max-w-lg flex flex-col items-center justify-center gap-6 py-16 sm:py-24 rounded-lg border border-dashed cursor-pointer hover:border-primary hover:border-2 transition-colors shadow-card", isDragActive && "border-primary border-2")}>
+                <input {...getInputProps()} accept={ALLOWED_FILE_TYPES.join(",")} />
+                <Upload className={cn("size-12 md:size-14 stroke-muted-foreground", isDragActive && "stroke-primary")} />
                 <div className="flex flex-col items-center text-muted-foreground sm:text-xl text-center">
                     <p>Drag and drop images or click to select</p>
                     <p>

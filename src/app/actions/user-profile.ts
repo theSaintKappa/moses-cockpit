@@ -1,15 +1,26 @@
 "use server";
 
 import { env } from "@/env";
+import type { APIUserProfile } from "@/lib/types";
 import { getServerSession } from "@/server/auth";
-import type { RESTGetAPIUserResult } from "discord-api-types/v10";
 
-export default async function getUserProfile(userId: string): Promise<RESTGetAPIUserResult | null> {
+const fetchedProfiles = new Map<string, APIUserProfile>();
+
+export async function getUserProfile(userId: string): Promise<APIUserProfile | null> {
     const session = await getServerSession();
     if (!session) return null;
 
-    const url = `https://discord.com/api/v10/users/${userId}`;
-    const response = await fetch(url, { headers: { Authorization: `Bot ${env.DISCORD_BOT_TOKEN}` }, next: { revalidate: 3600 } });
+    if (fetchedProfiles.has(userId)) return fetchedProfiles.get(userId) || null;
 
-    return response.ok ? await response.json() : null;
+    const url = `https://discord.com/api/v10/users/${userId}`;
+    const response = await fetch(url, { headers: { Authorization: `Bot ${env.DISCORD_BOT_TOKEN}` }, next: { revalidate: 900 } });
+
+    let profile = await response.json();
+    profile = { ...profile, avatar_url: `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}` };
+
+    fetchedProfiles.set(userId, profile);
+
+    return response.ok ? profile : null;
 }
+
+export const getUserProfileCache = async () => fetchedProfiles;
