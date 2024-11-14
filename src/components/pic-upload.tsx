@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { ALLOWED_FILE_TYPES, MAX_FILE_SIZE } from "@/lib/constants";
 import { cn } from "@/lib/utils";
-import { ChevronsDown, ImagePlus, ImageUp, Loader2, SquareArrowOutUpRight, Trash2, Upload } from "lucide-react";
+import { ChevronsDown, ImageUp, Loader2, SquareArrowOutUpRight, Trash2, Upload } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";

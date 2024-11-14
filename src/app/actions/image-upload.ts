@@ -53,7 +53,7 @@ export async function verifyToken(id: string, token: string) {
     const url = `https://${env.GCP_BUCKET_NAME}/moses/${id}`;
     await prisma.mosesPic.create({ data: { picId: id, url, submitterId, size, dimensions, contentType } });
     await prisma.cockpitPicToken.delete({ where: { picId: id } });
-    await prisma.cockpitLog.create({ data: { action: "image-upload", metadata: { userId: submitterId, url, uploadedAt: Date.now() } } });
+    await prisma.cockpitLog.create({ data: { action: "image_upload", metadata: { userId: submitterId, url, id } } });
 
     return true;
 }

@@ -42,11 +42,15 @@ model CockpitPicToken {
   @@map("cockpit.picTokens")
 }
 
+enum LogAction {
+  image_upload
+}
+
 model CockpitLog {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  action    String
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  action    LogAction
   metadata  Json
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
 
   @@map("cockpit.logs")
 }
